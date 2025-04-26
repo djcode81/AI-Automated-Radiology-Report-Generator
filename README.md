@@ -78,30 +78,7 @@ If the automatic setup doesn't work for your environment, follow these steps:
    mkdir -p CT_CLIP_encoder
    ```
 
-5. Download required models:
-   - From Hugging Face (requires access to Meta models):
-     ```bash
-     # Login to Hugging Face
-     huggingface-cli login
-     
-     # Download Llama 3.1 8B model
-     python -c "
-     from transformers import AutoModelForCausalLM, AutoTokenizer
-     import torch
-     
-     model_id = 'meta-llama/Llama-3.1-8B-Instruct'
-     tokenizer = AutoTokenizer.from_pretrained(model_id)
-     tokenizer.save_pretrained('./models/CT-CHAT/llama_3.1_8b')
-     
-     model = AutoModelForCausalLM.from_pretrained(
-         model_id,
-         device_map='auto',
-         torch_dtype=torch.float16
-     )
-     model.save_pretrained('./models/CT-CHAT/llama_3.1_8b')
-     "
-     ```
-   - For the CT-CLIP encoder: Download the `clip_visual_encoder.pt` file and place it in the `CT_CLIP_encoder` directory
+5. Download required models, you can either use direct download from Google drive or the Offical Huggingface repository. Mkase sure to place them inside the right folder.
 
 ## Usage
 
