@@ -33,8 +33,8 @@ This repository contains an AI system for 3D medical image analysis and interpre
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ct-report-generator.git
-   cd ct-report-generator
+   git clone https://github.com/djcode81/AI-Automated-Radiology-Report.git
+   cd AI-Automated-Radiology-Report
    ```
 
 2. Run the all-in-one setup script:
