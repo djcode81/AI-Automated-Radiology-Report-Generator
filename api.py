@@ -3,16 +3,14 @@ import os
 import tempfile
 import shutil
 import sys
+import subprocess  # Add this import
 
 # Add parent directory to path to import pipeline.py
-sys.path.append('/net/dali/home/mscbio/dhp72/DS/new1')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from pipeline import process_nifti_to_report
 
 app = Flask(__name__)
 
-# Replace the entire generate_report function with this:
-# Replace only the generate_report function in api.py with this:
-# Replace the entire generate_report function with this:
 @app.route('/generate-report', methods=['POST'])
 def generate_report():
     if 'file' not in request.files:
@@ -33,7 +31,7 @@ def generate_report():
         file.save(temp_file_path)
         
         # Run our shell script
-        cmd = ["/net/dali/home/mscbio/dhp72/DS/new1/run_ct_pipeline.sh", temp_file_path]
+        cmd = ["./run_ct_pipeline.sh", temp_file_path] 
         result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode != 0:
@@ -57,5 +55,5 @@ def generate_report():
         # Clean up
         shutil.rmtree(temp_dir)
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # Fix the underscores
     app.run(host='0.0.0.0', port=8000)
