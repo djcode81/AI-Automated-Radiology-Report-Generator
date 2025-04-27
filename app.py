@@ -95,8 +95,9 @@ if uploaded_file:
         
         try:
             # Make sure the reports directory exists
-            reports_dir = os.path.expanduser("~/DS/new1/reports")
-            embeddings_dir = os.path.expanduser("~/DS/new1/embeddings")
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            reports_dir = os.path.join(script_dir, "reports")
+            embeddings_dir = os.path.join(script_dir, "embeddings")
             os.makedirs(reports_dir, exist_ok=True)
             os.makedirs(embeddings_dir, exist_ok=True)
             
@@ -111,14 +112,17 @@ if uploaded_file:
             status.info("Generating embeddings...")
             progress.progress(25)
             
+            # Use relative paths for scripts
+            encode_script_path = os.path.join(script_dir, "encode_script.py")
+            
             # Run encoding script
             encode_cmd = [
-                "bash", "-c",
-                f"cd /net/dali/home/mscbio/dhp72/DS/new1 && " +
-                f"source ~/miniconda3/etc/profile.d/conda.sh && " +
-                f"conda activate clara-env && " +
-                f"python /net/dali/home/mscbio/dhp72/DS/new1/encode_script.py " +
-                f"--path {temp_path} --slope 1 --intercept 0 --xy_spacing 1 --z_spacing 1"
+                "python", encode_script_path,
+                "--path", temp_path, 
+                "--slope", "1", 
+                "--intercept", "0", 
+                "--xy_spacing", "1", 
+                "--z_spacing", "1"
             ]
             
             encode_result = subprocess.run(encode_cmd, capture_output=True, text=True)
@@ -133,16 +137,17 @@ if uploaded_file:
             status.info("Generating radiology report...")
             progress.progress(75)
             
-            # Run the report generation script in the DS/new1 directory
+            # Run the report generation script
+            ct_chat_script_path = os.path.join(script_dir, "enhanced_ct_chat.py")
+            llm_model_path = os.path.join(script_dir, "models", "CT-CHAT", "llama_3.1_8b")
+            adapter_path = os.path.join(script_dir, "models", "CT-CHAT", "llama_3.1_8b")
+            
             report_cmd = [
-                "bash", "-c",
-                f"cd /net/dali/home/mscbio/dhp72/DS/new1 && " +
-                f"source ~/miniconda3/etc/profile.d/conda.sh && " +
-                f"conda activate clara-env && " +
-                f"python enhanced_ct_chat.py " +
-                f"--llm-model-path ~/DS/new1/models/CT-CHAT/llama_3.1_8b " +
-                f"--adapter-path ~/DS/new1/models/CT-CHAT/llama_3.1_8b " +
-                f"--image-file {embedding_path} --device cuda"
+                "python", ct_chat_script_path,
+                "--llm-model-path", llm_model_path,
+                "--adapter-path", adapter_path,
+                "--image-file", embedding_path, 
+                "--device", "cuda"
             ]
             
             report_result = subprocess.run(report_cmd, capture_output=True, text=True)
@@ -158,7 +163,7 @@ if uploaded_file:
             
             # ALWAYS look for the RAW report first
             expected_raw_report_file = f"{base_filename}_ct_chat_raw_report.txt"
-            expected_raw_report_path = os.path.join("/net/dali/home/mscbio/dhp72/DS/new1", expected_raw_report_file)
+            expected_raw_report_path = os.path.join(script_dir, expected_raw_report_file)
             
             # Copy report to the reports directory
             report_path = os.path.join(reports_dir, f"{base_filename}_report.txt")
@@ -173,7 +178,7 @@ if uploaded_file:
                 report_content = clean_report_locally(raw_content)
             else:
                 # Try finding any report file
-                find_cmd = ["find", "/net/dali/home/mscbio/dhp72/DS/new1", "-name", f"*{base_filename}*report*.txt"]
+                find_cmd = ["find", script_dir, "-name", f"*{base_filename}*report*.txt"]
                 find_result = subprocess.run(find_cmd, capture_output=True, text=True)
                 found_files = find_result.stdout.strip().split('\n')
                 found_files = [f for f in found_files if f]
