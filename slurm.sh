@@ -17,4 +17,4 @@ conda activate ct-report-env  # or whatever your environment is called
 
 
 # Run the Streamlit app
-streamlit run app.py --server.port=9000 --server.address=0.0.0.0
+streamlit run app.py --server.port=9000 --server.address=0.0.0.0 --server.maxUploadSize=1024
