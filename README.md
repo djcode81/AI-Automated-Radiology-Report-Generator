@@ -43,23 +43,6 @@ This system uses two main models:
   
 - The models can be downloaded from the [Huggingface repository](https://huggingface.co/datasets/ibrahimhamamci/CT-RATE) or from [Google Drive](https://drive.google.com/drive/folders/1NWLCLQoYRIde6e9ht55U2lMXb1b1C2kY?usp=sharing).
 
-## Directory Structure
-
-```
-ct-report-generator/
-├── run.sh                  # All-in-one script for running the application
-├── check_requirements.py   # System requirements checker
-├── app.py                  # Streamlit web interface
-├── api.py                  # Flask API server
-├── pipeline.py             # End-to-end pipeline script
-├── encode_script.py        # CT scan to embedding converter
-├── enhanced_ct_chat.py     # Report generation script
-├── environment.yml         # Conda environment specification
-├── embeddings/             # Directory for temporary embeddings
-└── reports/                # Directory for generated reports
-```
-
-
 
 ## System Requirements
 
