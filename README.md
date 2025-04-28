@@ -220,3 +220,13 @@ Run the system requirements check to identify any issues:
    - The system will automatically use 4-bit quantization on GPUs with less than 16GB VRAM
    - Monitor GPU memory usage with `nvidia-smi`
    - Try closing other applications that might be using GPU memory
+
+
+## License
+
+This project is for research and educational purposes only. The models and code should be used in accordance with their respective licenses.
+
+## Acknowledgements
+
+- CT-CLIP mode and CT-CHAT based on research by [https://arxiv.org/abs/2403.17834]
+- Llama 3.1 model developed by Meta AI Research
