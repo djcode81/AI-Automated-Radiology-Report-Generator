@@ -11,6 +11,56 @@ This repository contains an AI system for 3D medical image analysis and interpre
 - **Multiple Access Methods**: Use via web interface, API, or command line
 - **Automatic System Requirements Check**: Verifies your system meets all requirements before running
 
+
+## How It Works
+
+The system operates in two main stages:
+
+1. **Image Encoding**: 
+   - The CT scan is loaded and preprocessed (resampling, normalization)
+   - A 3D Vision Transformer encodes the scan into a dense representation
+   - The embedding captures the relevant anatomical features
+
+2. **Report Generation**:
+   - The CT embeddings are passed to a Llama 3.1 8B model with a LoRA adapter
+   - The model generates a structured radiology report with findings and impressions
+   - The report is cleaned to remove any artifacts or unwanted content
+
+## Model Details
+
+This system uses two main models:
+
+1. **CT-CLIP Visual Encoder**: Converts 3D CT scans into embeddings
+   - Based on a 3D Vision Transformer (ViT) architecture
+   - Trained on CT scan data to extract relevant features
+   - Located in `CT_CLIP_encoder/clip_visual_encoder.pt`
+
+2. **Llama 3.1 8B with LoRA Adapter**: Generates radiology reports
+   - Base: Meta's Llama 3.1 8B model
+   - Fine-tuned with LoRA (Low-Rank Adaptation) on radiology reports
+   - Located in `models/CT-CHAT/llama_3.1_8b/`
+   - Capable of generating structured medical reports with findings and impressions
+  
+- The models can be downloaded from the [Huggingface repository](https://huggingface.co/datasets/ibrahimhamamci/CT-RATE) or from [Google Drive](https://drive.google.com/drive/folders/1NWLCLQoYRIde6e9ht55U2lMXb1b1C2kY?usp=sharing).
+
+## Directory Structure
+
+```
+ct-report-generator/
+├── run.sh                  # All-in-one script for running the application
+├── check_requirements.py   # System requirements checker
+├── app.py                  # Streamlit web interface
+├── api.py                  # Flask API server
+├── pipeline.py             # End-to-end pipeline script
+├── encode_script.py        # CT scan to embedding converter
+├── enhanced_ct_chat.py     # Report generation script
+├── environment.yml         # Conda environment specification
+├── embeddings/             # Directory for temporary embeddings
+└── reports/                # Directory for generated reports
+```
+
+
+
 ## System Requirements
 
 ### Recommended Hardware
@@ -154,50 +204,6 @@ Example API usage:
 curl -X POST -F "file=@input_file.nii.gz" http://localhost:8000/generate-report
 ```
 
-## How It Works
-
-The system operates in two main stages:
-
-1. **Image Encoding**: 
-   - The CT scan is loaded and preprocessed (resampling, normalization)
-   - A 3D Vision Transformer encodes the scan into a dense representation
-   - The embedding captures the relevant anatomical features
-
-2. **Report Generation**:
-   - The CT embeddings are passed to a Llama 3.1 8B model with a LoRA adapter
-   - The model generates a structured radiology report with findings and impressions
-   - The report is cleaned to remove any artifacts or unwanted content
-
-## Model Details
-
-This system uses two main models:
-
-1. **CT-CLIP Visual Encoder**: Converts 3D CT scans into embeddings
-   - Based on a 3D Vision Transformer (ViT) architecture
-   - Trained on CT scan data to extract relevant features
-   - Located in `CT_CLIP_encoder/clip_visual_encoder.pt`
-
-2. **Llama 3.1 8B with LoRA Adapter**: Generates radiology reports
-   - Base: Meta's Llama 3.1 8B model
-   - Fine-tuned with LoRA (Low-Rank Adaptation) on radiology reports
-   - Located in `models/CT-CHAT/llama_3.1_8b/`
-   - Capable of generating structured medical reports with findings and impressions
-
-## Directory Structure
-
-```
-ct-report-generator/
-├── run.sh                  # All-in-one script for running the application
-├── check_requirements.py   # System requirements checker
-├── app.py                  # Streamlit web interface
-├── api.py                  # Flask API server
-├── pipeline.py             # End-to-end pipeline script
-├── encode_script.py        # CT scan to embedding converter
-├── enhanced_ct_chat.py     # Report generation script
-├── environment.yml         # Conda environment specification
-├── embeddings/             # Directory for temporary embeddings
-└── reports/                # Directory for generated reports
-```
 
 ## Troubleshooting
 
