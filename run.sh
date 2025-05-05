@@ -39,90 +39,20 @@ print_error() {
 
 # Function to check if conda is installed
 check_conda() {
-    if command -v conda >/dev/null 2>&1; then
-        print_success "Conda is installed."
-        return 0
-    else
-        print_error "Conda is not installed or not in PATH."
-        print_error "Please install Miniconda or Anaconda before proceeding."
-        print_status "You can download Miniconda from: https://docs.conda.io/en/latest/miniconda.html"
-        return 1
-    fi
+    print_status "Skipping Conda check as the studio provides a default environment."
+    return 0
 }
 
 # Function to check if environment exists
 check_env() {
-    ENV_NAME="ct-report-env"
-    if conda env list | grep -q "^$ENV_NAME "; then
-        print_success "Conda environment '$ENV_NAME' exists."
-        return 0
-    else
-        print_warning "Conda environment '$ENV_NAME' does not exist."
-        return 1
-    fi
+    print_status "Skipping Conda environment check as the studio provides a default environment."
+    return 0
 }
 
 # Function to create or update environment
 setup_environment() {
-    ENV_NAME="ct-report-env"
-    
-    # Check if environment already exists
-    if conda env list | grep -q "^$ENV_NAME "; then
-        print_status "Updating existing environment..."
-        
-        # Create or update environment.yml if it doesn't exist
-        if [ ! -f "environment.yml" ]; then
-            create_environment_file
-        fi
-        
-        conda env update -f environment.yml
-    else
-        print_status "Creating new conda environment '$ENV_NAME'..."
-        
-        # Create environment.yml if it doesn't exist
-        if [ ! -f "environment.yml" ]; then
-            create_environment_file
-        fi
-        
-        conda env create -f environment.yml
-    fi
-    
-    print_success "Conda environment setup complete."
-}
-
-# Function to create environment.yml file
-create_environment_file() {
-    print_status "Creating environment.yml file..."
-    
-    cat > environment.yml << EOF
-name: ct-report-env
-channels:
-  - pytorch
-  - nvidia
-  - conda-forge
-  - defaults
-dependencies:
-  - python=3.10
-  - pip
-  - pytorch
-  - torchvision
-  - torchaudio
-  - pytorch-cuda=11.8
-  - nibabel
-  - numpy
-  - streamlit
-  - flask
-  - pip:
-    - transformers>=4.30.0
-    - peft
-    - accelerate
-    - safetensors
-    - huggingface_hub
-    - streamlit-option-menu
-    - scikit-image
-EOF
-    
-    print_success "Created environment.yml file."
+    print_status "Skipping Conda environment setup as the studio provides a default environment."
+    return 0
 }
 
 # Function to run the system requirements check
@@ -134,13 +64,8 @@ run_requirements_check() {
         return 1
     fi
     
-    # Activate environment if it exists
-    if check_env; then
-        source "$(conda info --base)/etc/profile.d/conda.sh"
-        conda activate ct-report-env
-    fi
-    
-    python check_requirements.py
+    # Replace with the correct Python interpreter path
+    /home/zeus/miniconda3/envs/cloudspace/bin/python check_requirements.py
     
     # Check exit code
     if [ $? -ne 0 ]; then
@@ -179,13 +104,8 @@ start_webapp() {
     # Check if streamlit is installed
     if ! command -v streamlit >/dev/null 2>&1; then
         print_error "Streamlit is not installed or not in PATH."
-        print_error "Please run setup first: $0 --setup"
         return 1
     fi
-    
-    # Activate environment
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-    conda activate ct-report-env
     
     # Check if app.py exists
     if [ ! -f "app.py" ]; then
@@ -195,7 +115,6 @@ start_webapp() {
     
     # Start streamlit
     streamlit run app.py --server.port=9000 --server.maxUploadSize=1024
-    
     return 0
 }
 
@@ -204,15 +123,10 @@ start_api() {
     print_status "Starting API server..."
     
     # Check if flask is installed
-    if ! conda run -n ct-report-env python -c "import flask" 2>/dev/null; then
+    if ! python -c "import flask" 2>/dev/null; then
         print_error "Flask is not installed in the environment."
-        print_error "Please run setup first: $0 --setup"
         return 1
     fi
-    
-    # Activate environment
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-    conda activate ct-report-env
     
     # Check if api.py exists
     if [ ! -f "api.py" ]; then
@@ -222,7 +136,6 @@ start_api() {
     
     # Start API server
     python api.py
-    
     return 0
 }
 
@@ -249,10 +162,6 @@ process_scan() {
     fi
     
     print_status "Processing CT scan: $SCAN_FILE"
-    
-    # Activate environment
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-    conda activate ct-report-env
     
     # Check if pipeline.py exists
     if [ ! -f "pipeline.py" ]; then
@@ -307,10 +216,6 @@ setup_models() {
         echo "Would you like to try downloading it now? (y/n)"
         read -r answer
         if [[ "$answer" =~ ^[Yy]$ ]]; then
-            # Activate environment
-            source "$(conda info --base)/etc/profile.d/conda.sh"
-            conda activate ct-report-env
-            
             # Check if huggingface_hub is installed
             if ! python -c "import huggingface_hub" 2>/dev/null; then
                 print_status "Installing huggingface_hub..."
@@ -430,30 +335,16 @@ main() {
             exit $?
             ;;
         -s|--setup)
-            if ! check_conda; then
-                exit 1
-            fi
-            
             setup_environment
             run_requirements_check
             setup_models
             exit $?
             ;;
         -w|--webapp)
-            if ! check_conda || ! check_env; then
-                print_error "Environment not setup. Please run setup first: $0 --setup"
-                exit 1
-            fi
-            
             start_webapp
             exit $?
             ;;
         -a|--api)
-            if ! check_conda || ! check_env; then
-                print_error "Environment not setup. Please run setup first: $0 --setup"
-                exit 1
-            fi
-            
             start_api
             exit $?
             ;;
@@ -461,11 +352,6 @@ main() {
             if [ $# -lt 2 ]; then
                 print_error "No scan file specified."
                 echo -e "Usage: $0 --process FILE"
-                exit 1
-            fi
-            
-            if ! check_conda || ! check_env; then
-                print_error "Environment not setup. Please run setup first: $0 --setup"
                 exit 1
             fi
             

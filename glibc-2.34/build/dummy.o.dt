@@ -1,0 +1,19 @@
+/teamspace/studios/this_studio/AI-Automated-Radiology-Report/glibc-2.34/build/dummy.o: \
+ /teamspace/studios/this_studio/AI-Automated-Radiology-Report/glibc-2.34/build/dummy.c \
+ ../include/stdc-predef.h \
+ /teamspace/studios/this_studio/AI-Automated-Radiology-Report/glibc-2.34/build/libc-modules.h \
+ ../include/libc-symbols.h \
+ /teamspace/studios/this_studio/AI-Automated-Radiology-Report/glibc-2.34/build/config.h \
+ ../sysdeps/generic/libc-symver.h ../sysdeps/generic/symbol-hacks.h
+
+../include/stdc-predef.h:
+
+/teamspace/studios/this_studio/AI-Automated-Radiology-Report/glibc-2.34/build/libc-modules.h:
+
+../include/libc-symbols.h:
+
+/teamspace/studios/this_studio/AI-Automated-Radiology-Report/glibc-2.34/build/config.h:
+
+../sysdeps/generic/libc-symver.h:
+
+../sysdeps/generic/symbol-hacks.h:
