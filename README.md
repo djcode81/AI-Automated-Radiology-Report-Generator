@@ -2,6 +2,9 @@
 
 This repository contains an AI system for 3D medical image analysis and interpretation that combines a visual encoder and a LoRA-adapted Llama 3.1 LLM model. The system analyzes CT scan images (.nii.gz format) and generates structured radiology reports with findings and impression sections.
 
+<img width="1434" alt="Screenshot 2025-05-08 at 6 02 26 PM" src="https://github.com/user-attachments/assets/d9705b7a-980c-4db5-bbf9-89373ecc1ac7" />
+
+
 ## Features
 
 - **3D Medical Image Processing**: Converts CT scan images into embeddings using a custom CT-CLIP encoder
