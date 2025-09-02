@@ -1,0 +1,25 @@
+name: ct-report-env
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=11.8
+  - nibabel
+  - numpy
+  - streamlit
+  - flask
+  - pip:
+    - transformers>=4.30.0
+    - peft
+    - accelerate
+    - safetensors
+    - huggingface_hub
+    - streamlit-option-menu
+    - scikit-image

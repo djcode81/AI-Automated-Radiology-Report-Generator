@@ -118,78 +118,6 @@ check_python() {
     return 0
 }
 
-# Function to check/create conda environment
-setup_conda_environment() {
-    print_status "Setting up Conda environment..."
-    
-    if ! command_exists conda; then
-        print_error "Conda is not installed or not in the PATH."
-        print_error "Please install Miniconda or Anaconda before proceeding."
-        return 1
-    fi
-    
-    # Create or update conda environment
-    ENV_NAME="ct-report-env"
-    
-    # Check if environment already exists
-    if conda env list | grep -q "^$ENV_NAME "; then
-        print_status "Conda environment '$ENV_NAME' already exists."
-        print_status "Updating existing environment..."
-        conda env update -f environment.yml
-    else
-        print_status "Creating new conda environment '$ENV_NAME'..."
-        
-        # Create environment.yml if it doesn't exist
-        if [ ! -f "environment.yml" ]; then
-            cat > environment.yml << EOF
-name: ct-report-env
-channels:
-  - pytorch
-  - nvidia
-  - conda-forge
-  - defaults
-dependencies:
-  - python=3.10
-  - pip
-  - pytorch
-  - torchvision
-  - torchaudio
-  - pytorch-cuda=11.8
-  - nibabel
-  - numpy
-  - streamlit
-  - flask
-  - pip:
-    - transformers>=4.30.0
-    - peft
-    - accelerate
-    - safetensors
-    - huggingface_hub
-    - streamlit-option-menu
-    - scikit-image
-EOF
-        fi
-        
-        conda env create -f environment.yml
-    fi
-    
-    print_success "Conda environment setup complete."
-    
-    # Activate environment for this script
-    print_status "Activating conda environment '$ENV_NAME'..."
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-    conda activate $ENV_NAME
-    
-    # Check if activation was successful
-    if [ $? -ne 0 ]; then
-        print_error "Failed to activate conda environment '$ENV_NAME'."
-        return 1
-    fi
-    
-    print_success "Conda environment activated."
-    return 0
-}
-
 # Function to create directory structure
 create_directory_structure() {
     print_status "Creating project directory structure..."
@@ -332,10 +260,6 @@ generate_run_scripts() {
 #!/bin/bash
 # Script to run the Streamlit app for AI Automated Report Generator
 
-# Load conda environment
-source "\$(conda info --base)/etc/profile.d/conda.sh"
-conda activate ct-report-env
-
 # Run Streamlit app
 cd "\$(dirname "\$0")"
 streamlit run app.py --server.port=9000 --server.maxUploadSize=1024
@@ -355,10 +279,6 @@ fi
 
 INPUT_FILE="\$1"
 OUTPUT_FILE="\${2:-\${INPUT_FILE%.nii.gz}_report.txt}"
-
-# Load conda environment
-source "\$(conda info --base)/etc/profile.d/conda.sh"
-conda activate ct-report-env
 
 # Run the pipeline
 cd "\$(dirname "\$0")"
@@ -386,11 +306,8 @@ main() {
         exit 1
     fi
     
-    # Setup conda environment
-    if ! setup_conda_environment; then
-        print_error "Conda environment setup failed. Cannot proceed."
-        exit 1
-    fi
+    # Skip Conda environment setup
+    print_status "Skipping Conda environment setup as the studio provides a default environment."
     
     # Create directory structure
     if ! create_directory_structure; then

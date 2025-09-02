@@ -11,10 +11,5 @@
 #SBATCH --partition=dept_gpu
 #SBATCH --constraint="L40|A4500"
 
-# Load your environment
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate ct-report-env  # or whatever your environment is called
-
-
 # Run the Streamlit app
 streamlit run app.py --server.port=9000 --server.address=0.0.0.0 --server.maxUploadSize=1024
